@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PANDAMENTALS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff;
+    --panel:#f7f8fa;
+    --panel-2:#eef0f3;
+    --line:#e3e6eb;
+    --text:#14171c;
+    --muted:#697180;
+    --up:#e0342a;      /* ストップ高 = 赤 */
+    --up-dim:#ffe4e1;
+    --down:#2f6fe0;    /* ストップ安 = 青 */
+    --down-dim:#e3edff;
+    --amber:#b9790c;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Zen Kaku Gothic New', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(47,111,224,0.06), transparent 60%),
+      radial-gradient(ellipse 900px 500px at 85% 0%, rgba(224,52,42,0.05), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--sans);
+    line-height:1.6;
+    min-height:100vh;
+  }
+  a{color:inherit;}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px;}
+
+  /* ---------- Header ---------- */
+  header.top{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    flex-wrap:wrap;gap:16px;
+    border-bottom:1px solid var(--line);
+    padding-bottom:20px;margin-bottom:28px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--up);box-shadow:0 0 10px var(--up);animation:blink 2.2s infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .brand h1{
+    font-family:var(--mono);font-weight:800;font-size:22px;letter-spacing:2px;margin:0;
+  }
+  .brand h1 span{color:var(--muted);font-weight:500;font-size:12px;letter-spacing:3px;display:block;margin-top:2px;}
+  .date-pick{
+    font-family:var(--mono);font-size:13px;color:var(--muted);
+    display:flex;align-items:center;gap:10px;
+  }
+  .date-pick select{
+    background:var(--panel);border:1px solid var(--line);color:var(--text);
+    font-family:var(--mono);font-size:13px;padding:6px 8px;border-radius:6px;
+  }
+  .date-pick select:disabled{
+    opacity:1;color:var(--text);cursor:default;-webkit-appearance:none;appearance:none;
+  }
+
+  /* ---------- Nikkei bar ---------- */
+  .nikkei{
+    display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:16px 20px;margin-bottom:28px;
+  }
+  .nikkei .label{font-size:12px;color:var(--muted);letter-spacing:1px;}
+  .nikkei .value{font-family:var(--mono);font-size:22px;font-weight:700;}
+  .nikkei .delta{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--down);}
+  .nikkei .note{font-size:12.5px;color:var(--muted);max-width:520px;}
+
+  /* ---------- Scoreboard (signature element) ---------- */
+  .scoreboard{
+    display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:36px;
+  }
+  .scoreboard.single{grid-template-columns:1fr;max-width:260px;}
+  .scoreboard.single.with-note{
+    display:flex;align-items:stretch;gap:16px;max-width:none;
+  }
+  .scoreboard.single.with-note .score-card{flex:0 0 240px;}
+  .section-note{
+    flex:1;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:16px 20px;font-size:13px;color:var(--muted);line-height:1.8;
+    display:flex;align-items:center;
+  }
+  @media (max-width:700px){
+    .scoreboard.single.with-note{flex-direction:column;}
+    .scoreboard.single.with-note .score-card{flex:none;}
+  }
+  .score-card{
+    position:relative;border-radius:12px;padding:22px 24px;overflow:hidden;
+    border:1px solid var(--line);
+  }
+  .score-card.up{background:linear-gradient(160deg, var(--up-dim), var(--panel) 60%);}
+  .score-card.down{background:linear-gradient(160deg, var(--down-dim), var(--panel) 60%);}
+  .score-card.neutral{background:linear-gradient(160deg, #fdf1dc, var(--panel) 60%);}
+  .score-card .kicker{
+    font-size:11px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:6px;
+  }
+  .score-card .title{font-size:15px;font-weight:700;margin-bottom:14px;}
+  .score-card.up .title{color:var(--up);}
+  .score-card.down .title{color:var(--down);}
+  .score-card.neutral .title{color:var(--amber);}
+  .digits{display:flex;gap:6px;align-items:flex-end;}
+  .digit{
+    font-family:var(--mono);font-weight:800;font-size:56px;line-height:1;
+    background:#000;border-radius:6px;padding:6px 10px;
+    border:1px solid rgba(255,255,255,0.06);
+    text-shadow:0 0 14px currentColor;
+  }
+  .score-card.up .digit{color:var(--up);}
+  .score-card.down .digit{color:var(--down);}
+  .score-card.neutral .digit{color:var(--amber);}
+  .unit{font-family:var(--mono);font-size:13px;color:var(--muted);margin-left:8px;align-self:flex-end;margin-bottom:8px;}
+
+  /* ---------- Section headers ---------- */
+  .section-head{
+    display:flex;align-items:center;gap:10px;margin:40px 0 16px;
+  }
+  .section-head .bar{width:4px;height:20px;border-radius:2px;}
+  .section-head.up .bar{background:var(--up);}
+  .section-head.down .bar{background:var(--down);}
+  .section-head h2{font-size:17px;margin:0;font-weight:700;}
+  .section-head .count{font-family:var(--mono);color:var(--muted);font-size:13px;}
+
+  /* ---------- Stock cards ---------- */
+  .stock-list{display:flex;flex-direction:column;gap:12px;}
+  .stock{
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:16px 18px;cursor:pointer;transition:border-color .15s;
+  }
+  .stock.up:hover{border-color:var(--up);}
+  .stock.down:hover{border-color:var(--down);}
+
+  .stock-top{
+    display:grid;
+    grid-template-columns:52px 1fr auto;
+    gap:14px;align-items:start;
+  }
+  .code{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--muted);padding-top:2px;}
+  .name-wrap .name{font-weight:700;font-size:15.5px;}
+  .name-wrap .market{font-size:11.5px;color:var(--muted);margin-top:2px;}
+  .name-wrap .biz{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.55;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .name-wrap .site-link{
+    font-size:11px;font-family:var(--mono);color:var(--muted);
+    text-decoration:none;border-bottom:1px dotted var(--muted);margin-top:6px;display:inline-block;
+  }
+  .name-wrap .site-link:hover{color:var(--text);border-color:var(--text);}
+
+  .price-cell{text-align:right;white-space:nowrap;}
+  .price-cell .price{font-family:var(--mono);font-weight:800;font-size:22px;}
+  .price-cell .chg{font-family:var(--mono);font-weight:700;font-size:14px;margin-top:2px;}
+  .stock.up .price-cell .chg{color:var(--up);}
+  .stock.down .price-cell .chg{color:var(--down);}
+
+  .stock-mid{
+    display:flex;flex-wrap:wrap;align-items:center;gap:16px;
+    margin-top:14px;padding-top:14px;border-top:1px solid var(--line);
+  }
+  .chart-cell svg{display:block;}
+  .chart-note{font-family:var(--mono);font-size:9.5px;color:var(--muted);margin-top:2px;}
+  .period-tabs{display:flex;gap:4px;margin-bottom:6px;}
+  .period-tab{
+    font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:4px;
+    border:1px solid var(--line);color:var(--muted);background:transparent;cursor:pointer;
+  }
+  .period-tab.active{border-color:currentColor;color:var(--text);background:rgba(0,0,0,0.05);}
+  .stock.up .period-tab.active{color:var(--up);}
+  .stock.down .period-tab.active{color:var(--down);}
+
+  .tv-link{
+    display:flex;align-items:center;gap:8px;
+    padding:9px 14px;border-radius:8px;
+    border:1px solid var(--line);background:var(--panel-2);
+    text-decoration:none;color:var(--text);
+    font-family:var(--mono);font-size:11.5px;white-space:nowrap;
+    transition:border-color .15s, background .15s;
+  }
+  .tv-link:hover{border-color:currentColor;background:rgba(0,0,0,0.04);}
+  .stock.up .tv-link:hover{color:var(--up);}
+  .stock.down .tv-link:hover{color:var(--down);}
+  .tv-link svg{flex-shrink:0;}
+  .tv-link .tv-text{display:flex;flex-direction:column;line-height:1.3;}
+  .tv-link .tv-main{font-weight:700;}
+  .tv-link .tv-sub{color:var(--muted);font-size:9.5px;letter-spacing:0.5px;}
+
+  .stats-grid{
+    display:flex;align-items:center;
+  }
+  .stat{padding:0;}
+  .stat .stat-label{font-size:10px;color:var(--muted);letter-spacing:0.5px;display:block;margin-bottom:3px;}
+  .stat .stat-value{font-family:var(--mono);font-size:13.5px;font-weight:700;}
+
+  .detail{
+    font-size:13px;color:var(--muted);
+    border-top:1px dashed var(--line);padding-top:12px;margin-top:14px;
+    display:none;line-height:1.8;
+  }
+  .stock.open .detail{display:block;}
+  .detail .block{margin-bottom:12px;}
+  .detail .block:last-child{margin-bottom:0;}
+  .detail .biz-full{color:var(--text);}
+  .detail b{color:var(--muted);font-weight:700;font-size:11px;letter-spacing:1px;
+    display:block;margin-bottom:3px;text-transform:uppercase;}
+  .detail .outlook{color:var(--text);}
+  .expand-hint{
+    text-align:center;font-family:var(--mono);font-size:10px;color:var(--muted);
+    margin-top:12px;letter-spacing:0.5px;
+  }
+
+  /* ---------- Ranking sections ---------- */
+  .ranking-note{
+    font-size:12px;color:var(--muted);line-height:1.7;margin:-6px 0 20px;
+    padding:10px 14px;border-left:2px solid var(--line);background:var(--panel-2);border-radius:0 6px 6px 0;
+  }
+
+
+  @media (max-width:700px){
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <span class="dot"></span>
+      <h1>PANDAMENTALS</h1>
+    </div>
+    <div class="date-pick">
+      対象日
+      <select id="yearSelect" disabled>
+        <option value="2026" selected>2026年</option>
+      </select>
+      <select id="monthSelect" disabled>
+        <option value="7" selected>7月</option>
+      </select>
+      <select id="daySelect" disabled>
+        <option value="24" selected>24日（金）</option>
+      </select>
+    </div>
+  </header>
+
+  <div class="nikkei">
+    <div>
+      <div class="label">日経平均株価</div>
+      <div class="value">64,611.15</div>
+    </div>
+    <div>
+      <div class="label">前日比</div>
+      <div class="delta">▼1,811.45（−2.73%）</div>
+    </div>
+    <div class="note">中東情勢の緊迫化と原油急伸、前日米国株安（ナスダック▲2%超）を受けた売りが先行。買われ過ぎていたAI・半導体株の反動に加え、円安・金利上昇によるインフレ懸念も重荷に。</div>
+  </div>
+
+  <div class="scoreboard">
+    <div class="score-card up">
+      <div class="kicker">LIMIT-UP</div>
+      <div class="title">ストップ高</div>
+      <div class="digits">
+        <div class="digit">03</div>
+        <span class="unit">銘柄</span>
+      </div>
+    </div>
+    <div class="score-card down">
+      <div class="kicker">LIMIT-DOWN</div>
+      <div class="title">ストップ安</div>
+      <div class="digits">
+        <div class="digit">02</div>
+        <span class="unit">銘柄</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-head up">
+    <div class="bar"></div>
+    <h2>ストップ高銘柄</h2>
+    <span class="count">click to expand</span>
+  </div>
+  <div class="stock-list" id="upList"></div>
+
+  <div class="section-head down">
+    <div class="bar"></div>
+    <h2>ストップ安銘柄</h2>
+    <span class="count">click to expand</span>
+  </div>
+  <div class="stock-list" id="downList"></div>
+
+  <div class="section-head up" style="margin-top:48px;">
+    <div class="bar"></div>
+    <h2>注目の銘柄</h2>
+    <span class="count">2026.07.24</span>
+  </div>
+  <div class="scoreboard single with-note">
+    <div class="score-card neutral">
+      <div class="kicker">FEATURED</div>
+      <div class="title">注目の銘柄</div>
+      <div class="digits">
+        <div class="digit">03</div>
+        <span class="unit">銘柄</span>
+      </div>
+    </div>
+    <div class="section-note">ストップ高・ストップ安以外で、この日の相場で話題になった銘柄をピックアップしています。株探の話題株ピックアップ記事などをもとに、値動きの背景や翌日の視点を整理しています。</div>
+  </div>
+  <div class="stock-list" id="featuredList"></div>
+
+  <div class="section-head up" style="margin-top:48px;">
+    <div class="bar" style="background:var(--amber);"></div>
+    <h2>直近のIPO銘柄</h2>
+    <span class="count">click to expand</span>
+  </div>
+  <div class="scoreboard single with-note">
+    <div class="score-card neutral">
+      <div class="kicker">RECENT IPO</div>
+      <div class="title">直近のIPO銘柄</div>
+      <div class="digits">
+        <div class="digit">03</div>
+        <span class="unit">銘柄</span>
+      </div>
+    </div>
+    <div class="section-note">直近1〜2カ月以内に東証グロース市場へ新規上場した銘柄です。チャートは「1日」「5日」「1カ月」の期間を切り替えて表示できます。</div>
+  </div>
+  <div class="stock-list" id="ipoList"></div>
+
+</div>
+
+<script>
+const upStocks = [
+  {
+    code:"5240", name:"monoAI technology", market:"東証グロース",
+    site:"https://monoai.co.jp/", tv:"TSE-5240",
+    price:"213", chg:"+30.67%",
+    marketCap:"26.1億円", per:"―（赤字）", pbr:"2.42倍", yieldPct:"0.00%", marginRatio:"1.28倍",
+    biz:"オンラインゲーム開発で培った通信技術とAI技術を核に、メタバース基盤「XR CLOUD」やAIエージェント「SuperCat」を法人向けに提供するXR・AI企業。",
+    chart:[0,5,12,20,27,30.67,30.67,30.67],
+    detail:"前場からストップ高買い気配で始まり、そのまま引けまで値を維持。決算や適時開示など明確な好材料は確認できず、信用の踏み上げや仕手的な思惑買いが主導したとみられる値動き。",
+    outlook:"材料難のままの値幅制限上昇のため、翌営業日は寄り付きの買い気配の厚さと信用買い残の増減が焦点。急騰の反動で利益確定売りが出やすい一方、思惑が続けば連続ストップ高もあり得る、どちらにも振れやすい局面。"
+  },
+  {
+    code:"3260", name:"エスポア", market:"名証NXT",
+    site:"https://www.es-poir.co.jp/", tv:"NAG-3260",
+    price:"642", chg:"+18.45%",
+    marketCap:"36.9億円", per:"―（赤字）", pbr:"―", yieldPct:"0.00%", marginRatio:"信用取引不可",
+    biz:"名古屋地盤の不動産会社。賃貸・宅地販売が主力で、2025年に経営陣交代を経て蓄電池物件など新規事業にも参入。",
+    chart:[0,1.85,-6.83,-3,3,6.09,12,18.45],
+    detail:"寄り付き後に一時安値505円（前日比−6.8%）まで売られる場面もあったが、後場にかけて急速に切り返し、大引けにかけて買いが加速してストップ高（642円）で引けた。値動きの軽い小型株で、全体相場安の中でも個人資金が物色に向かった一例。",
+    outlook:"出来高を伴わない値動きの軽い銘柄のため、翌日は寄り付き前の気配値と信用買い残の状況次第で値が荒れやすい。新規事業（蓄電池関連）の続報が出れば材料が続く可能性がある一方、材料が一巡すれば急速な反落もあり得る。"
+  },
+  {
+    code:"5242", name:"アイズ", market:"東証グロース",
+    site:"https://www.eyez.jp/", tv:"TSE-5242",
+    price:"2,209", chg:"+11.01%",
+    marketCap:"約22億円", per:"約680倍", pbr:"3.39倍", yieldPct:"0.00%", marginRatio:"買建のみ可",
+    biz:"広告業界特化型プラットフォーム「メディアレーダー」、口コミマーケティング「トラミー」などを展開するインターネットサイト運営会社。",
+    chart:[0,2,5,8,9,11.01],
+    detail:"直近セッションでも値上がりが目立っていた銘柄で、朝方から緩やかに水準を切り上げ、引けにかけて短期資金の継続的な買いが入りストップ高で終えた。",
+    outlook:"連日の値上がりが続いており、翌日は短期資金の利益確定売りが出るかどうかが焦点。「メディアレーダー」の会員数など事業指標の更新が好感される限りは押し目を買われやすいが、過熱感には注意が必要。"
+  },
+];
+
+const downStocks = [
+  {
+    code:"9256", name:"サクシード", market:"東証グロース",
+    site:"https://www.succeed-corp.jp/", tv:"TSE-9256",
+    price:"2,120", chg:"−19.08%",
+    marketCap:"75.9億円", per:"約29倍", pbr:"2.91倍", yieldPct:"約0.75%", marginRatio:"買建のみ可",
+    biz:"個別指導教室・家庭教師紹介、教育／福祉業界向け人材サービス、教育AIプラットフォーム「スクールAI」などを展開する教育・福祉サービス企業。",
+    chart:[0,-1.26,-3,-8,-14,-19.08],
+    detail:"寄り付きは前日比−1.3%程度と底堅かったが、日経平均が下げ幅を拡大した後場にかけて売りが加速。個別の悪材料は確認できず、全面安の地合いでグロース株が特に売り込まれた形でストップ安引け。",
+    outlook:"個別材料でなく地合い要因の下落であるため、翌日は日経平均・グロース市場全体の地合いが落ち着けば自律反発する余地がある。ただし全体相場が引き続き軟調なら戻りが鈍い展開も想定される。"
+  },
+  {
+    code:"150A", name:"JSH", market:"東証グロース",
+    site:"https://www.jsh-japan.jp/", tv:"TSE-150A",
+    price:"556", chg:"−15.24%",
+    marketCap:"約31.5億円", per:"―（赤字）", pbr:"1.28倍", yieldPct:"0.00%", marginRatio:"買建のみ可",
+    biz:"障がい者雇用支援・観光物産の地方創生事業と、精神科訪問診療コンサルティング・訪問看護の在宅医療事業を展開する2024年上場の小型グロース株。",
+    chart:[0,-2,-5,-9,-13,-15.24],
+    detail:"個別の悪材料は見当たらず、日経平均が大幅反落する中でリスクオフの流れに沿って終日じり安となり、ストップ安で引けた。薄商いの小型グロース株らしい値動き。",
+    outlook:"薄商いの小型株で値動きが振れやすく、翌日は出来高の戻りと売買代金の水準がまず注目点。地合い次第の下落だったため、全体相場が落ち着けば自律反発の可能性もある。"
+  },
+];
+
+// ---- sparkline renderer ----
+function sparkline(data, color, width=140, height=40){
+  const min = Math.min(...data, 0);
+  const max = Math.max(...data, 0);
+  const range = (max - min) || 1;
+  const stepX = width / (data.length - 1);
+  const zeroY = height - ((0 - min) / range) * height;
+  const pts = data.map((v,i)=>{
+    const x = i * stepX;
+    const y = height - ((v - min) / range) * height;
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(' ');
+  const areaPts = `0,${zeroY.toFixed(1)} ${pts} ${width},${zeroY.toFixed(1)}`;
+  const last = data[data.length-1];
+  return `
+    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <line x1="0" y1="${zeroY.toFixed(1)}" x2="${width}" y2="${zeroY.toFixed(1)}"
+        stroke="#d5d9df" stroke-width="1" stroke-dasharray="2,3"/>
+      <polygon points="${areaPts}" fill="${color}" opacity="0.12"/>
+      <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2"
+        stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="${((data.length-1)*stepX).toFixed(1)}" cy="${(height - ((last-min)/range)*height).toFixed(1)}"
+        r="3" fill="${color}"/>
+    </svg>`;
+}
+
+function tvUrl(symbol){
+  return `https://jp.tradingview.com/symbols/${symbol}/`;
+}
+
+function renderStocks(list, containerId, type){
+  const el = document.getElementById(containerId);
+  const color = type === 'up' ? '#e0342a' : '#2f6fe0';
+  list.forEach((s)=>{
+    const row = document.createElement('div');
+    row.className = `stock ${type}`;
+    row.innerHTML = `
+      <div class="stock-top">
+        <div class="code">${s.code}</div>
+        <div class="name-wrap">
+          <div class="name">${s.name}</div>
+          <div class="market">${s.market}</div>
+          <div class="biz">${s.biz}</div>
+          <a class="site-link" href="${s.site}" target="_blank" rel="noopener">公式サイト ↗</a>
+        </div>
+        <div class="price-cell">
+          <div class="price">${s.price}円</div>
+          <div class="chg">${s.chg}</div>
+        </div>
+      </div>
+      <div class="stock-mid">
+        <div class="chart-cell">
+          ${sparkline(s.chart, color)}
+          <div class="chart-note">前日終値比・参考イメージ</div>
+        </div>
+        <a class="tv-link" href="${tvUrl(s.tv)}" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M2 12L6 7L9 10L14 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="14" cy="3" r="1.4" fill="currentColor"/>
+          </svg>
+          <span class="tv-text">
+            <span class="tv-main">TradingView</span>
+            <span class="tv-sub">チャートを見る ↗</span>
+          </span>
+        </a>
+        <div class="stats-grid">
+          <div class="stat"><span class="stat-label">時価総額</span><span class="stat-value">${s.marketCap}</span></div>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="block"><b>事業内容</b><span class="biz-full">${s.biz}</span></div>
+        <div class="block"><b>値動きの背景</b>${s.detail}</div>
+        <div class="block"><b>翌日の視点</b><span class="outlook">${s.outlook}</span></div>
+      </div>
+      <div class="expand-hint">タップして詳細を表示 ▾</div>
+    `;
+    row.addEventListener('click', (e)=>{
+      if(e.target.closest('a')) return;
+      row.classList.toggle('open');
+    });
+    el.appendChild(row);
+  });
+}
+renderStocks(upStocks, 'upList', 'up');
+renderStocks(downStocks, 'downList', 'down');
+
+// ---- featured/notable stocks (not stop-high/low, but topical movers this day) ----
+const featuredStocks = [
+  {
+    code:"8541", name:"愛媛銀行", market:"東証プライム",
+    site:"https://www.himegin.co.jp/", tv:"TSE-8541",
+    price:"2,794", chg:"+11.40%",
+    marketCap:"1,102億円", per:"16.8倍", pbr:"0.76倍", yieldPct:"1.72%", marginRatio:"買建・売建可",
+    biz:"愛媛県を地盤とする第二地方銀行。県内中小企業向け融資や個人向け金融サービスを展開。",
+    chart:[0,4.0,1.3,8,12.0,11.4],
+    detail:"同じ愛媛県地盤のいよぎんホールディングス（伊予銀行）との経営統合を正式発表し、思惑買いが集まった。2027年4月をメドに、いよぎんHDの完全子会社となる形で経営統合する。",
+    outlook:"26年12月に予定される最終契約・株式交換比率など詳細条件の発表が次の材料。思惑先行で買われた分、続報が出るまでは材料難で伸び悩む可能性もある。"
+  },
+  {
+    code:"1723", name:"日本電技", market:"東証スタンダード",
+    site:"https://www.nihondengi.co.jp/", tv:"TSE-1723",
+    price:"2,510", chg:"+14.51%",
+    marketCap:"約411億円", per:"―（要確認）", pbr:"―（要確認）", yieldPct:"―（要確認）", marginRatio:"買建のみ可",
+    biz:"ビルや工場の空調自動制御システムの設計・施工を手がける計装エンジニアリング会社。産業計装関連事業も展開。",
+    chart:[0,1.9,-1.5,8,16.1,14.51],
+    detail:"2027年3月期第1四半期（4-6月期）決算で営業利益が前年同期比39.4%増となったことが好感され、後場に急騰した。オフィス・工場向け空調設備の既設工事の受注増加が主因。",
+    outlook:"決算を受けた見直し買いがどこまで続くかが焦点。買建のみ可能な銘柄のため需給が偏りやすく、短期的な過熱感には注意が必要。"
+  },
+  {
+    code:"6999", name:"KOA", market:"東証プライム",
+    site:"https://www.koaglobal.com/", tv:"TSE-6999",
+    price:"1,018", chg:"+17.3%",
+    marketCap:"約382億円", per:"19.63倍", pbr:"1.06倍", yieldPct:"1.54%", marginRatio:"買建・売建可",
+    biz:"長野県伊那谷を拠点とする電子部品メーカー。面実装抵抗器や温度センサーなど、自動車・産業機器向け抵抗器で世界トップクラスのシェアを持つ。",
+    chart:[0,5,10,14,17.3],
+    detail:"27年3月期の業績・配当予想を大幅に上方修正したことが好感され、大幅反発した。自動車・AI関連機器向け抵抗器の需要が堅調に推移していることが背景。",
+    outlook:"上方修正を受けた見直し買いが続くか、材料出尽くしで利益確定売りが出るかが焦点。全体相場が軟調な中でも、個別の好材料株として物色が続く可能性がある。"
+  },
+];
+renderStocks(featuredStocks, 'featuredList', 'up');
+
+// ---- recent IPO stocks (chart with 1日/5日/1カ月 period toggle) ----
+const ipoStocks = [
+  {
+    code:"593A", name:"ティアフォー", market:"東証グロース", dir:"down",
+    site:"https://tier4.co.jp/", tv:"TSE-593A",
+    price:"1,102", chg:"−11.13%",
+    marketCap:"約700億円", per:"―（赤字）", pbr:"―（要確認）", yieldPct:"0.00%", marginRatio:"買建のみ可",
+    biz:"名古屋大学発の自動運転スタートアップ。オープンソースの自動運転ソフトウェア「Autoware」の開発を主導し、自動運転バスなどの社会実装を進める。",
+    charts:{
+      "1日":[0,-3.15,-4.68,-8,-11.13],
+      "5日":[0,22.2,8.6],
+      "1カ月":[0,22.2,8.6]
+    },
+    detail:"2026年7月22日に東証グロース市場へ上場。公開価格1,085円に対し、初値は7.0%安の1,009円と公募割れスタート。初日は安値896円まで売られた後、高値1,081円まで買い戻される荒い値動きとなり、1,015円で引けた。",
+    outlook:"9月期は大幅な営業赤字を見込んでおり、収益化はまだ先。自動運転というテーマ性への期待と、赤字先行の実態とのせめぎ合いが当面の値動きを左右しそうだ。"
+  },
+  {
+    code:"598A", name:"チャットプラス", market:"東証グロース", dir:"down",
+    site:"https://chatplus.jp/", tv:"TSE-598A",
+    price:"1,813", chg:"−11.56%",
+    marketCap:"約84億円", per:"―（要確認）", pbr:"―（要確認）", yieldPct:"0.00%", marginRatio:"―（未確認）",
+    biz:"チャットボット「ChatPlus」やAIエージェント「AI AgentPlus」を提供する、問い合わせ対応の自動化・DX支援企業。",
+    charts:{
+      "1日":[0,-4,-8,-11.56],
+      "5日":[0,111,68],
+      "1カ月":[0,111,157.8,68]
+    },
+    detail:"2026年7月15日に東証グロース市場へ上場。公開価格1,080円に対し初値は2倍超の水準まで買われたが、その後は急速に値を消し、7月24日には年初来安値（1,809円）を更新する場面もあった。",
+    outlook:"IPO直後の需給が一巡し、実業績（営業利益率の高さ）が改めて評価されるかが焦点。急騰の反動安がどこで一巡するかを見極めたい局面。"
+  },
+  {
+    code:"584A", name:"LiNKX", market:"東証グロース", dir:"down",
+    site:"https://www.linkx.dev/", tv:"TSE-584A",
+    price:"2,799", chg:"−8.83%",
+    marketCap:"約190億円", per:"約80倍（参考値）", pbr:"約14.4倍（参考値）", yieldPct:"0.00%", marginRatio:"―（未確認）",
+    biz:"金融機関向けの基幹システム（コアバンキング等）のモダナイゼーションを手がける2020年設立のテクノロジー企業。エンジニアの多くを海外人材が占めるグローバルな開発体制が特徴。",
+    charts:{
+      "1日":[0,-8.83],
+      "5日":[0,19.64,9.08],
+      "1カ月":[0,123.3,103.6]
+    },
+    detail:"2026年6月23日に東証グロース市場へ上場。公開価格790円に対し、初値は36.07%高の1,075円と好スタートを切った。7月23日には一時ストップ高の3,070円まで急伸したが、7月24日は反落した。",
+    outlook:"金融機関向けシステム刷新という専門性の高さが評価される一方、上場直後で値動きの振れ幅が大きい銘柄。急伸後の反動がどこで一巡するかが焦点。"
+  },
+];
+
+function renderIPOStocks(list, containerId){
+  const el = document.getElementById(containerId);
+  const periods = ["1日","5日","1カ月"];
+  list.forEach((s,i)=>{
+    const color = s.dir === 'up' ? '#e0342a' : '#2f6fe0';
+    const row = document.createElement('div');
+    row.className = `stock ${s.dir}`;
+    const chartId = `ipo-chart-${i}`;
+    const tabsHtml = periods.map((p,pi)=>
+      `<button type="button" class="period-tab ${pi===0?'active':''}" data-period="${p}">${p}</button>`
+    ).join('');
+    row.innerHTML = `
+      <div class="stock-top">
+        <div class="code">${s.code}</div>
+        <div class="name-wrap">
+          <div class="name">${s.name}</div>
+          <div class="market">${s.market}</div>
+          <div class="biz">${s.biz}</div>
+          <a class="site-link" href="${s.site}" target="_blank" rel="noopener">公式サイト ↗</a>
+        </div>
+        <div class="price-cell">
+          <div class="price">${s.price}円</div>
+          <div class="chg">${s.chg}</div>
+        </div>
+      </div>
+      <div class="stock-mid">
+        <div class="chart-cell">
+          <div class="period-tabs">${tabsHtml}</div>
+          <div id="${chartId}">${sparkline(s.charts["1日"], color)}</div>
+          <div class="chart-note">上場来・参考イメージ</div>
+        </div>
+        <a class="tv-link" href="${tvUrl(s.tv)}" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M2 12L6 7L9 10L14 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="14" cy="3" r="1.4" fill="currentColor"/>
+          </svg>
+          <span class="tv-text">
+            <span class="tv-main">TradingView</span>
+            <span class="tv-sub">チャートを見る ↗</span>
+          </span>
+        </a>
+        <div class="stats-grid">
+          <div class="stat"><span class="stat-label">時価総額</span><span class="stat-value">${s.marketCap}</span></div>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="block"><b>IPO・上場の経緯</b><span class="biz-full">${s.detail}</span></div>
+        <div class="block"><b>今後の視点</b><span class="outlook">${s.outlook}</span></div>
+      </div>
+      <div class="expand-hint">タップして詳細を表示 ▾</div>
+    `;
+    row.addEventListener('click', (e)=>{
+      if(e.target.closest('a') || e.target.closest('.period-tab')) { 
+        if(e.target.closest('.period-tab')) return;
+        return;
+      }
+      row.classList.toggle('open');
+    });
+    row.querySelectorAll('.period-tab').forEach(btn=>{
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        row.querySelectorAll('.period-tab').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(chartId).innerHTML = sparkline(s.charts[btn.dataset.period], color);
+      });
+    });
+    el.appendChild(row);
+  });
+}
+renderIPOStocks(ipoStocks, 'ipoList');
+</script>
+</body>
+</html>
