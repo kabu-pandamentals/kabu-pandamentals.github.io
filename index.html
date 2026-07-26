@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PANDAMENTALS</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%BC%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -19,12 +20,15 @@
     --down:#2f6fe0;    /* ストップ安 = 青 */
     --down-dim:#e3edff;
     --amber:#b9790c;
+    --bamboo:#3f7d43;  /* パンダの笹モチーフ用アクセント */
+    --bamboo-dim:#e7f2e6;
     --mono: 'JetBrains Mono', monospace;
     --sans: 'Zen Kaku Gothic New', sans-serif;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
+    position:relative;
     background:
       radial-gradient(ellipse 900px 500px at 15% -10%, rgba(47,111,224,0.06), transparent 60%),
       radial-gradient(ellipse 900px 500px at 85% 0%, rgba(224,52,42,0.05), transparent 60%),
@@ -34,8 +38,20 @@
     line-height:1.6;
     min-height:100vh;
   }
+  /* 背景にうっすらパンダの足あとパターン */
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    opacity:0.6;
+    background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='64'%20height='64'%3E%3Cg%20fill='%2314171c'%20fill-opacity='0.035'%3E%3Cellipse%20cx='32'%20cy='40'%20rx='11'%20ry='8'/%3E%3Ccircle%20cx='20'%20cy='23'%20r='4.4'/%3E%3Ccircle%20cx='29'%20cy='16'%20r='4.4'/%3E%3Ccircle%20cx='39'%20cy='16'%20r='4.4'/%3E%3Ccircle%20cx='48'%20cy='23'%20r='4.4'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat:repeat;
+    background-size:64px 64px;
+  }
   a{color:inherit;}
-  .wrap{max-width:1080px;margin:0 auto;padding:32px 20px 80px;}
+  .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:32px 20px 80px;}
 
   /* ---------- Header ---------- */
   header.top{
@@ -45,7 +61,14 @@
     padding-bottom:20px;margin-bottom:28px;
   }
   .brand{display:flex;align-items:center;gap:12px;}
-  .brand .dot{width:10px;height:10px;border-radius:50%;background:var(--up);box-shadow:0 0 10px var(--up);animation:blink 2.2s infinite;}
+  .mascot-wrap{position:relative;flex-shrink:0;}
+  .mascot{display:block;width:38px;height:38px;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.08));}
+  .brand .dot{
+    position:absolute;top:-2px;right:-2px;
+    width:9px;height:9px;border-radius:50%;background:var(--up);
+    box-shadow:0 0 8px var(--up),0 0 0 2px var(--bg);
+    animation:blink 2.2s infinite;
+  }
   @keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
   .brand h1{
     font-family:var(--mono);font-weight:800;font-size:22px;letter-spacing:2px;margin:0;
@@ -108,11 +131,19 @@
   .score-card.neutral .title{color:var(--amber);}
   .digits{display:flex;gap:6px;align-items:flex-end;}
   .digit{
+    position:relative;
     font-family:var(--mono);font-weight:800;font-size:56px;line-height:1;
     background:#000;border-radius:6px;padding:6px 10px;
     border:1px solid rgba(255,255,255,0.06);
     text-shadow:0 0 14px currentColor;
   }
+  /* パンダの耳っぽい丸みを数字ボックスの上に */
+  .digit::before,.digit::after{
+    content:"";position:absolute;top:-6px;width:12px;height:12px;
+    background:#000;border-radius:50%;border:1px solid rgba(255,255,255,0.06);
+  }
+  .digit::before{left:5px;}
+  .digit::after{right:5px;}
   .score-card.up .digit{color:var(--up);}
   .score-card.down .digit{color:var(--down);}
   .score-card.neutral .digit{color:var(--amber);}
@@ -126,6 +157,7 @@
   .section-head.up .bar{background:var(--up);}
   .section-head.down .bar{background:var(--down);}
   .section-head h2{font-size:17px;margin:0;font-weight:700;}
+  .section-head h2::before{content:"🐾";font-size:12.5px;margin-right:7px;opacity:0.5;vertical-align:2px;}
   .section-head .count{font-family:var(--mono);color:var(--muted);font-size:13px;}
 
   /* ---------- Stock cards ---------- */
@@ -220,6 +252,16 @@
     padding:10px 14px;border-left:2px solid var(--line);background:var(--panel-2);border-radius:0 6px 6px 0;
   }
 
+  /* ---------- Footer ---------- */
+  .site-footer{
+    margin-top:56px;padding-top:24px;border-top:1px solid var(--line);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    text-align:center;color:var(--muted);
+  }
+  .site-footer .paw-row{font-size:13px;letter-spacing:6px;color:var(--bamboo);opacity:0.6;}
+  .site-footer .tagline{font-family:var(--mono);font-size:12px;letter-spacing:1px;}
+  .site-footer .tagline b{color:var(--text);}
+  .site-footer .disclaimer{font-size:11px;line-height:1.7;max-width:560px;}
 
   @media (max-width:700px){
   }
@@ -230,8 +272,20 @@
 
   <header class="top">
     <div class="brand">
-      <span class="dot"></span>
-      <h1>PANDAMENTALS</h1>
+      <div class="mascot-wrap">
+        <svg class="mascot" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="15" cy="13" r="9" fill="var(--text)"/>
+          <circle cx="49" cy="13" r="9" fill="var(--text)"/>
+          <circle cx="32" cy="35" r="25" fill="var(--bg)" stroke="var(--text)" stroke-width="2.5"/>
+          <ellipse cx="19" cy="33" rx="8.5" ry="10.5" fill="var(--text)"/>
+          <ellipse cx="45" cy="33" rx="8.5" ry="10.5" fill="var(--text)"/>
+          <circle cx="20" cy="34" r="2.8" fill="var(--bg)"/>
+          <circle cx="46" cy="34" r="2.8" fill="var(--bg)"/>
+          <ellipse cx="32" cy="44" rx="4.8" ry="3.4" fill="var(--text)"/>
+        </svg>
+        <span class="dot"></span>
+      </div>
+      <h1>PANDAMENTALS<span>日本株 値幅制限モニター</span></h1>
     </div>
     <div class="date-pick">
       対象日
@@ -329,6 +383,12 @@
     <div class="section-note">直近1〜2カ月以内に東証グロース市場へ新規上場した銘柄です。チャートは「1日」「5日」「1カ月」の期間を切り替えて表示できます。</div>
   </div>
   <div class="stock-list" id="ipoList"></div>
+
+  <footer class="site-footer">
+    <div class="paw-row">🐾 🐾 🐾</div>
+    <div class="tagline">🐼 <b>PANDAMENTALS</b> — パンダのように、じっくり冷静に相場を見る</div>
+    <div class="disclaimer">掲載情報は株探などの公開情報をもとに整理した参考情報であり、投資勧誘を目的とするものではありません。投資判断はご自身の責任で行ってください。</div>
+  </footer>
 
 </div>
 
@@ -814,6 +874,22 @@ function currentDateKey(){
   return `${y}-${m}-${day}`;
 }
 
+function availableDateKeys(){
+  return Object.keys(DATA).sort();
+}
+
+function latestDateKey(){
+  const keys = availableDateKeys();
+  return keys[keys.length - 1];
+}
+
+function syncSelectorsToKey(dateKey){
+  const [y, m, d] = dateKey.split('-').map(Number);
+  document.getElementById('yearSelect').value = String(y);
+  document.getElementById('monthSelect').value = String(m);
+  document.getElementById('daySelect').value = String(d);
+}
+
 (function initDateSelector(){
   const yearSel = document.getElementById('yearSelect');
   const monthSel = document.getElementById('monthSelect');
@@ -824,9 +900,11 @@ function currentDateKey(){
     if(DATA[key]){
       renderDate(key);
     } else {
-      alert('このデモでは 2026年7月23日・24日 のみデータがあります。');
-      daySel.value = "24";
-      renderDate(currentDateKey());
+      const available = availableDateKeys().map(k=>k.replace(/-/g,'.')).join('、');
+      alert(`データがある日付を選択してください（対応日: ${available}）`);
+      const latest = latestDateKey();
+      syncSelectorsToKey(latest);
+      renderDate(latest);
     }
   }
   yearSel.addEventListener('change', handleChange);
@@ -834,7 +912,10 @@ function currentDateKey(){
   daySel.addEventListener('change', handleChange);
 })();
 
-renderDate("2026-07-24");
+// 起動時は常に最新の日付を表示
+const initialDateKey = latestDateKey();
+syncSelectorsToKey(initialDateKey);
+renderDate(initialDateKey);
 </script>
 </body>
 </html>
