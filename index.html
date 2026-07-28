@@ -488,7 +488,7 @@ function renderStocks(list, containerId, type){
       </div>
       <div class="stock-mid">
         <div class="chart-cell">
-          ${sparkline(s.chart, color)}
+          ${sparkline(s.chart, s.chartColor || color)}
           <div class="chart-note">前日終値比・参考イメージ</div>
         </div>
         <a class="tv-link" href="${tvUrl(s.tv)}" target="_blank" rel="noopener">

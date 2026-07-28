@@ -468,7 +468,7 @@ Object.assign(DATA, {
     {
       code:"4956", name:"コニシ", market:"東証プライム",
       site:"https://www.bond.co.jp/", tv:"TSE-4956",
-      price:"1,413", chg:"−4.59%", chgColor:"var(--down)", marketCap:"約995億円",
+      price:"1,413", chg:"−4.59%", chgColor:"var(--down)", chartColor:"#2f6fe0", marketCap:"約995億円",
       biz:"接着剤「ボンド」ブランドで知られる接着剤・土木建築資材メーカー。",
       chart:[0,-1,-2,-4.59],
       detail:"4-6月期の営業利益が53%増となったことが確認されたものの、全体相場が大幅安となる中で−4.59%（1,413円）まで売られた。日経平均の下落率（−3.95%）とほぼ同水準で、好決算のわりには底堅さが目立つ値動きだった。",
