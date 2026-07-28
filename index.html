@@ -39,16 +39,17 @@
     line-height:1.6;
     min-height:100vh;
   }
-  /* 背景に笹の葉パターン（パンダのモチーフ） */
+  /* 背景にうっすらパンダの足あとパターン */
   body::before{
     content:"";
     position:fixed;
     inset:0;
     z-index:0;
     pointer-events:none;
-    background-image:url("assets/bg-bamboo.svg");
+    opacity:0.7;
+    background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Cg%20fill='%2314171c'%20fill-opacity='0.04'%3E%3Cellipse%20cx='36'%20cy='45'%20rx='11'%20ry='8'/%3E%3Ccircle%20cx='24'%20cy='28'%20r='4.4'/%3E%3Ccircle%20cx='33'%20cy='21'%20r='4.4'/%3E%3Ccircle%20cx='43'%20cy='21'%20r='4.4'/%3E%3Ccircle%20cx='52'%20cy='28'%20r='4.4'/%3E%3C/g%3E%3C/svg%3E");
     background-repeat:repeat;
-    background-size:140px 140px;
+    background-size:72px 72px;
   }
   /* 画面下部に株価チャートの山を重ねた薄いシルエット（株のモチーフ） */
   body::after{
