@@ -31,27 +31,38 @@
   body{
     position:relative;
     background:
-      radial-gradient(circle, rgba(224,52,42,0.22) 1.6px, transparent 1.9px) 0 0/140px 140px,
-      radial-gradient(circle, rgba(47,111,224,0.22) 1.6px, transparent 1.9px) 70px 70px/140px 140px,
-      radial-gradient(circle, rgba(20,23,28,0.13) 1.3px, transparent 1.6px) 0 0/24px 24px,
-      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(47,111,224,0.06), transparent 60%),
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(47,111,224,0.07), transparent 60%),
+      radial-gradient(ellipse 800px 450px at 100% 0%, rgba(224,52,42,0.05), transparent 55%),
       var(--bg);
     color:var(--text);
     font-family:var(--sans);
     line-height:1.6;
     min-height:100vh;
   }
-  /* 背景にドット柄＋パンダの足あとパターン（株の値動きドットを想起させる赤・青ドットを混在） */
+  /* 背景に笹の葉パターン（パンダのモチーフ） */
   body::before{
     content:"";
     position:fixed;
     inset:0;
     z-index:0;
     pointer-events:none;
-    opacity:0.7;
-    background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='72'%20height='72'%3E%3Cg%20fill='%2314171c'%20fill-opacity='0.04'%3E%3Cellipse%20cx='36'%20cy='45'%20rx='11'%20ry='8'/%3E%3Ccircle%20cx='24'%20cy='28'%20r='4.4'/%3E%3Ccircle%20cx='33'%20cy='21'%20r='4.4'/%3E%3Ccircle%20cx='43'%20cy='21'%20r='4.4'/%3E%3Ccircle%20cx='52'%20cy='28'%20r='4.4'/%3E%3C/g%3E%3C/svg%3E");
+    background-image:url("assets/bg-bamboo.svg");
     background-repeat:repeat;
-    background-size:72px 72px;
+    background-size:140px 140px;
+  }
+  /* 画面下部に株価チャートの山を重ねた薄いシルエット（株のモチーフ） */
+  body::after{
+    content:"";
+    position:fixed;
+    left:0;right:0;bottom:0;
+    height:34vh;
+    max-height:320px;
+    z-index:0;
+    pointer-events:none;
+    background-image:url("assets/bg-chart.svg");
+    background-repeat:no-repeat;
+    background-position:bottom;
+    background-size:100% 100%;
   }
   a{color:inherit;}
   .wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:32px 20px 80px;}
