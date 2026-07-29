@@ -261,6 +261,62 @@
     padding:10px 14px;border-left:2px solid var(--line);background:var(--panel-2);border-radius:0 6px 6px 0;
   }
 
+  /* ---------- Kessan (earnings) tables ---------- */
+  .kessan-block{margin-bottom:28px;}
+  .kessan-block h3{
+    font-size:13.5px;font-weight:700;margin:0 0 10px;padding-left:10px;
+    border-left:3px solid var(--line);color:var(--text);
+  }
+  .kessan-block.good h3{border-left-color:var(--up);}
+  .kessan-block.bad h3{border-left-color:var(--down);}
+  .kessan-table-wrap{
+    overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  }
+  .kessan-table-wrap.scroll{max-height:460px;overflow-y:auto;}
+  table.kessan-table{width:100%;border-collapse:collapse;font-size:12.5px;}
+  table.kessan-table th, table.kessan-table td{
+    padding:9px 12px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line);
+  }
+  table.kessan-table td:last-child{white-space:normal;min-width:260px;color:var(--muted);}
+  table.kessan-table th{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:1px;color:var(--muted);
+    background:var(--panel-2);position:sticky;top:0;
+  }
+  table.kessan-table tr:last-child td{border-bottom:none;}
+  table.kessan-table td:nth-child(2){font-family:var(--mono);color:var(--muted);}
+  table.kessan-table tbody tr:hover{background:var(--panel-2);}
+  .scroll-hint{
+    text-align:center;font-family:var(--mono);font-size:10px;color:var(--muted);
+    margin:6px 0 14px;letter-spacing:0.5px;
+  }
+
+  /* ---------- Market breakdown summary table ---------- */
+  .market-summary-wrap{
+    display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px;
+  }
+  .market-summary-card{
+    flex:1;min-width:90px;text-align:center;cursor:pointer;user-select:none;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:8px;
+    padding:10px 8px;transition:border-color .15s, background .15s;
+  }
+  .market-summary-card:hover{border-color:var(--text);}
+  .market-summary-card.active{border-color:var(--amber);background:#fdf1dc;}
+  .market-summary-card.active .m-value{color:var(--amber);}
+  .market-summary-card .m-label{
+    font-family:var(--mono);font-size:10.5px;color:var(--muted);letter-spacing:0.5px;
+  }
+  .market-summary-card .m-value{
+    font-family:var(--mono);font-weight:800;font-size:20px;margin-top:2px;
+  }
+  .market-summary-card.total{background:var(--panel);border-style:dashed;}
+
+  @media (max-width:700px){
+    table.kessan-table{font-size:11.5px;}
+    table.kessan-table td:last-child{min-width:200px;}
+    .market-summary-card{min-width:70px;padding:8px 6px;}
+    .market-summary-card .m-value{font-size:17px;}
+  }
+
   /* ---------- Footer ---------- */
   .site-footer{
     margin-top:56px;padding-top:24px;border-top:1px solid var(--line);
@@ -397,6 +453,49 @@
     <div class="section-note">ストップ高・ストップ安以外で、この日の相場で話題になった銘柄をピックアップしています。株探の話題株ピックアップ記事などをもとに、値動きの背景や翌日の視点を整理しています。</div>
   </div>
   <div class="stock-list" id="featuredList"></div>
+
+  <div id="earningsSection">
+    <div class="section-head up" style="margin-top:48px;">
+      <div class="bar" style="background:var(--amber);"></div>
+      <h2>決算発表銘柄</h2>
+      <span class="count" id="earningsDateLabel">2026.07.29</span>
+    </div>
+    <div class="scoreboard single with-note">
+      <div class="score-card neutral">
+        <div class="kicker">EARNINGS</div>
+        <div class="title">決算発表銘柄</div>
+        <div class="digits">
+          <div class="digit" id="countEarnings">00</div>
+          <span class="unit">銘柄</span>
+        </div>
+      </div>
+      <div class="section-note" id="earningsNote"></div>
+    </div>
+
+    <div class="kessan-block good">
+      <h3 id="goodTitle">好材料（増益・上方修正）</h3>
+      <div class="market-summary-wrap" id="goodSummary"></div>
+      <div class="kessan-table-wrap scroll">
+        <table class="kessan-table" id="goodTable">
+          <thead><tr><th>銘柄</th><th>コード</th><th>市場</th><th>内容</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="scroll-hint">スクロールしてすべて表示 ▾</div>
+    </div>
+
+    <div class="kessan-block bad">
+      <h3 id="badTitle">悪材料（減益・赤字関連）</h3>
+      <div class="market-summary-wrap" id="badSummary"></div>
+      <div class="kessan-table-wrap scroll">
+        <table class="kessan-table" id="badTable">
+          <thead><tr><th>銘柄</th><th>コード</th><th>市場</th><th>内容</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="scroll-hint">スクロールしてすべて表示 ▾</div>
+    </div>
+  </div>
 
   <div class="section-head up" style="margin-top:48px;">
     <div class="bar" style="background:var(--green);"></div>
@@ -617,6 +716,64 @@ function renderIPOStocks(list, containerId, dateKey){
 }
 
 // ==================================================================
+// 決算発表銘柄：市場別フィルタ
+// ==================================================================
+function filterKessan(tableId, summaryId, cardEl){
+  const table = document.getElementById(tableId);
+  const market = cardEl.dataset.market;
+  const rows = table.querySelectorAll('tbody tr');
+  rows.forEach(row=>{
+    row.style.display = (market === 'ALL' || row.dataset.market === market) ? '' : 'none';
+  });
+  document.getElementById(summaryId).querySelectorAll('.market-summary-card').forEach(c=>{
+    c.classList.remove('active');
+  });
+  cardEl.classList.add('active');
+}
+
+const MARKET_GROUP_LABELS = {P:'東証Ｐ', S:'東証Ｓ', G:'東証Ｇ', OTHER:'その他'};
+
+function renderKessanTable(rows, tableId, summaryId, titleId, titleText){
+  document.getElementById(titleId).textContent = titleText;
+  const counts = {P:0, S:0, G:0, OTHER:0};
+  rows.forEach((r)=>{ counts[r.group] = (counts[r.group] || 0) + 1; });
+
+  const summaryEl = document.getElementById(summaryId);
+  summaryEl.innerHTML = Object.keys(MARKET_GROUP_LABELS).map((g)=>`
+    <div class="market-summary-card" data-market="${g}" onclick="filterKessan('${tableId}','${summaryId}',this)">
+      <div class="m-label">${MARKET_GROUP_LABELS[g]}</div>
+      <div class="m-value">${counts[g]}</div>
+    </div>`).join('') + `
+    <div class="market-summary-card total active" data-market="ALL" onclick="filterKessan('${tableId}','${summaryId}',this)">
+      <div class="m-label">合計</div>
+      <div class="m-value">${rows.length}</div>
+    </div>`;
+
+  const tbody = document.querySelector(`#${tableId} tbody`);
+  tbody.innerHTML = rows.map((r)=>`
+    <tr data-market="${r.group}">
+      <td><a href="https://kabutan.jp/stock/?code=${r.code}" target="_blank" rel="noopener">${r.name}</a></td>
+      <td>${r.code}</td>
+      <td>${r.market}</td>
+      <td>${r.detail}</td>
+    </tr>`).join('');
+}
+
+function renderKessan(earnings, dateKey){
+  const section = document.getElementById('earningsSection');
+  if(!earnings){
+    section.style.display = 'none';
+    return;
+  }
+  section.style.display = '';
+  document.getElementById('earningsDateLabel').textContent = dateKey.replace(/-/g,'.');
+  document.getElementById('countEarnings').textContent = String(earnings.good.length + earnings.bad.length).padStart(2,'0');
+  document.getElementById('earningsNote').textContent = earnings.note;
+  renderKessanTable(earnings.good, 'goodTable', 'goodSummary', 'goodTitle', `好材料（増益・上方修正）— ${earnings.good.length}銘柄`);
+  renderKessanTable(earnings.bad, 'badTable', 'badSummary', 'badTitle', `悪材料（減益・赤字関連）— ${earnings.bad.length}銘柄`);
+}
+
+// ==================================================================
 // DATA は data/<year>/<month>.js から読み込む（このタグの直後を参照）
 // ==================================================================
 var DATA = {};
@@ -653,6 +810,7 @@ function renderDate(dateKey){
   renderStocks(d.downStocks, 'downList', 'down', dateKey);
   renderStocks(d.featuredStocks, 'featuredList', 'up', dateKey);
   renderIPOStocks(d.ipoStocks, 'ipoList', dateKey);
+  renderKessan(d.earnings, dateKey);
 }
 
 function currentDateKey(){
