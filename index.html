@@ -233,6 +233,7 @@
   }
   .stat{padding:0;}
   .stat + .stat{padding-left:20px;border-left:1px solid var(--line);}
+  .stock-mid .current-price-stat{margin-left:auto;padding-left:20px;border-left:1px solid var(--line);}
   .stat .stat-label{font-size:10px;color:var(--muted);letter-spacing:0.5px;display:block;margin-bottom:3px;}
   .stat .stat-value{font-family:var(--mono);font-size:13.5px;font-weight:700;}
   .stat .stat-time{font-size:9.5px;color:var(--muted);margin-left:4px;}
@@ -535,9 +536,10 @@ function renderStocks(list, containerId, type, dateKey){
           </span>
         </a>
         <div class="stats-grid">
-          <div class="stat"><span class="stat-label">現在値</span>${currentPriceStat(s)}</div>
+          <div class="stat"><span class="stat-label">対象日</span><span class="stat-value">${dateLabel}</span></div>
           <div class="stat"><span class="stat-label">時価総額</span><span class="stat-value">${s.marketCap}</span></div>
         </div>
+        <div class="stat current-price-stat"><span class="stat-label">現在値</span>${currentPriceStat(s)}</div>
       </div>
       <div class="detail">
         <div class="block"><b>事業内容</b><span class="biz-full">${s.biz}</span></div>
@@ -595,9 +597,10 @@ function renderIPOStocks(list, containerId, dateKey){
           </span>
         </a>
         <div class="stats-grid">
-          <div class="stat"><span class="stat-label">現在値</span>${currentPriceStat(s)}</div>
+          <div class="stat"><span class="stat-label">対象日</span><span class="stat-value">${dateLabel}</span></div>
           <div class="stat"><span class="stat-label">時価総額</span><span class="stat-value">${s.marketCap}</span></div>
         </div>
+        <div class="stat current-price-stat"><span class="stat-label">現在値</span>${currentPriceStat(s)}</div>
       </div>
       <div class="detail">
         <div class="block"><b>IPO・上場の経緯</b><span class="biz-full">${s.detail}</span></div>
