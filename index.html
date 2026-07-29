@@ -465,6 +465,19 @@ function tvUrl(symbol){
   return `https://jp.tradingview.com/symbols/${symbol}/`;
 }
 
+// 騰落率と現在値から前日比の値幅を逆算して「▲50円（+30.67%）」のように整形する
+function formatChangeWithAmount(priceStr, chgStr){
+  const price = parseFloat(String(priceStr).replace(/,/g, ''));
+  const m = String(chgStr).match(/^([+\-−]?)([\d.]+)%(.*)$/);
+  if(!m || isNaN(price)) return chgStr;
+  const sign = m[1] === '−' || m[1] === '-' ? -1 : 1;
+  const pct = sign * parseFloat(m[2]);
+  const prevClose = price / (1 + pct / 100);
+  const amount = Math.round(Math.abs(price - prevClose));
+  const arrow = sign < 0 ? '▼' : '▲';
+  return `${arrow}${amount.toLocaleString('en-US')}円（${m[1]}${m[2]}%）${m[3]}`;
+}
+
 function renderStocks(list, containerId, type){
   const el = document.getElementById(containerId);
   el.innerHTML = '';
@@ -483,7 +496,7 @@ function renderStocks(list, containerId, type){
         </div>
         <div class="price-cell">
           <div class="price">${s.price}円</div>
-          <div class="chg"${s.chgColor ? ` style="color:${s.chgColor};"` : ''}>${s.chg}</div>
+          <div class="chg"${s.chgColor ? ` style="color:${s.chgColor};"` : ''}>${formatChangeWithAmount(s.price, s.chg)}</div>
         </div>
       </div>
       <div class="stock-mid">
@@ -539,7 +552,7 @@ function renderIPOStocks(list, containerId){
         </div>
         <div class="price-cell">
           <div class="price">${s.price}円</div>
-          <div class="chg"${s.chgColor ? ` style="color:${s.chgColor};"` : ''}>${s.chg}</div>
+          <div class="chg"${s.chgColor ? ` style="color:${s.chgColor};"` : ''}>${formatChangeWithAmount(s.price, s.chg)}</div>
         </div>
       </div>
       <div class="stock-mid">
