@@ -396,7 +396,8 @@
         <option value="24">24日（金）</option>
         <option value="27">27日（月）</option>
         <option value="28">28日（火）</option>
-        <option value="29" selected>29日（水）</option>
+        <option value="29">29日（水）</option>
+        <option value="30" selected>30日（木）</option>
       </select>
     </div>
   </header>
@@ -712,8 +713,11 @@ function renderKessanTable(rows, tableId, summaryId, titleId, titleText){
       <div class="m-value">${rows.length}</div>
     </div>`;
 
+  const groupOrder = Object.keys(MARKET_GROUP_LABELS);
+  const sortedRows = [...rows].sort((a, b)=> groupOrder.indexOf(a.group) - groupOrder.indexOf(b.group));
+
   const tbody = document.querySelector(`#${tableId} tbody`);
-  tbody.innerHTML = rows.map((r)=>`
+  tbody.innerHTML = sortedRows.map((r)=>`
     <tr data-market="${r.group}">
       <td><a href="https://kabutan.jp/stock/?code=${r.code}" target="_blank" rel="noopener">${r.name}</a></td>
       <td>${r.code}</td>
