@@ -189,7 +189,8 @@
     gap:14px;align-items:start;
   }
   .code{font-family:var(--mono);font-weight:700;font-size:14px;color:var(--muted);padding-top:2px;}
-  .name-wrap .name{font-weight:700;font-size:15.5px;}
+  .name-wrap .name{font-weight:700;font-size:15.5px;text-decoration:none;display:inline-block;}
+  .name-wrap .name:hover{text-decoration:underline;}
   .name-wrap .market{font-size:11.5px;color:var(--muted);margin-top:2px;}
   .name-wrap .biz{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.55;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
@@ -233,10 +234,8 @@
   }
   .stat{padding:0;}
   .stat + .stat{padding-left:20px;border-left:1px solid var(--line);}
-  .stock-mid .current-price-stat{margin-left:auto;padding-left:20px;border-left:1px solid var(--line);}
   .stat .stat-label{font-size:10px;color:var(--muted);letter-spacing:0.5px;display:block;margin-bottom:3px;}
   .stat .stat-value{font-family:var(--mono);font-size:13.5px;font-weight:700;}
-  .stat .stat-time{font-size:9.5px;color:var(--muted);margin-left:4px;}
 
   .detail{
     font-size:13px;color:var(--muted);
@@ -585,16 +584,6 @@ function formatChangeWithAmount(priceStr, chgStr){
   return `${arrow}${amount.toLocaleString('en-US')}円（${m[1]}${m[2]}%）${m[3]}`;
 }
 
-// data/current-prices.js（東証取引時間中15分おきに自動更新）から現在値を引き、
-// 未取得の銘柄はエントリ時点の株価にフォールバックする
-function currentPriceStat(s){
-  const price = (typeof CURRENT_PRICES !== 'undefined' && CURRENT_PRICES[s.code]) || s.price;
-  const time = (typeof CURRENT_PRICES_UPDATED_AT !== 'undefined' && CURRENT_PRICES_UPDATED_AT)
-    ? new Date(CURRENT_PRICES_UPDATED_AT).toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'})
-    : '';
-  return `<span class="stat-value">${price}円</span>${time ? `<span class="stat-time">${time}時点</span>` : ''}`;
-}
-
 function renderStocks(list, containerId, type, dateKey){
   const el = document.getElementById(containerId);
   el.innerHTML = '';
@@ -607,7 +596,7 @@ function renderStocks(list, containerId, type, dateKey){
       <div class="stock-top">
         <div class="code">${s.code}</div>
         <div class="name-wrap">
-          <div class="name">${s.name}</div>
+          <a class="name" href="https://kabutan.jp/stock/?code=${s.code}" target="_blank" rel="noopener">${s.name}</a>
           <div class="market">${s.market}</div>
           <div class="biz">${s.biz}</div>
           <a class="site-link" href="${s.site}" target="_blank" rel="noopener">公式サイト ↗</a>
@@ -638,7 +627,6 @@ function renderStocks(list, containerId, type, dateKey){
           <div class="stat"><span class="stat-label">対象日</span><span class="stat-value">${dateLabel}</span></div>
           <div class="stat"><span class="stat-label">時価総額</span><span class="stat-value">${s.marketCap}</span></div>
         </div>
-        <div class="stat current-price-stat"><span class="stat-label">現在値</span>${currentPriceStat(s)}</div>
       </div>
       <div class="detail">
         <div class="block"><b>事業内容</b><span class="biz-full">${s.biz}</span></div>
@@ -668,7 +656,7 @@ function renderIPOStocks(list, containerId, dateKey){
       <div class="stock-top">
         <div class="code">${s.code}</div>
         <div class="name-wrap">
-          <div class="name">${s.name}</div>
+          <a class="name" href="https://kabutan.jp/stock/?code=${s.code}" target="_blank" rel="noopener">${s.name}</a>
           <div class="market">${s.market}</div>
           <div class="biz">${s.biz}</div>
           <a class="site-link" href="${s.site}" target="_blank" rel="noopener">公式サイト ↗</a>
@@ -699,7 +687,6 @@ function renderIPOStocks(list, containerId, dateKey){
           <div class="stat"><span class="stat-label">対象日</span><span class="stat-value">${dateLabel}</span></div>
           <div class="stat"><span class="stat-label">時価総額</span><span class="stat-value">${s.marketCap}</span></div>
         </div>
-        <div class="stat current-price-stat"><span class="stat-label">現在値</span>${currentPriceStat(s)}</div>
       </div>
       <div class="detail">
         <div class="block"><b>IPO・上場の経緯</b><span class="biz-full">${s.detail}</span></div>
@@ -781,7 +768,6 @@ var DATA = {};
 <script src="data/2026/07.js"></script>
 <!-- 新しい月のデータを追加する場合は、ここに <script src="data/YYYY/MM.js"></script> を追記する -->
 <script src="data/upcoming-ipo.js"></script>
-<script src="data/current-prices.js"></script>
 <script>
 
 // ==================================================================
