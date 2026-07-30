@@ -3,8 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PANDAMENTALS</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%BC%3C/text%3E%3C/svg%3E">
+<title>PANDAMENTALS | 日本株 値幅制限モニター</title>
+<meta name="description" content="ストップ高・ストップ安、注目銘柄、IPO銘柄、決算発表銘柄をまとめた日本株モニター。">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icon-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/icon-180.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="PANDAMENTALS | 日本株 値幅制限モニター">
+<meta property="og:description" content="ストップ高・ストップ安、注目銘柄、IPO銘柄、決算発表銘柄をまとめた日本株モニター。">
+<meta property="og:url" content="https://kabu-pandamentals.github.io/">
+<meta property="og:image" content="https://kabu-pandamentals.github.io/assets/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PANDAMENTALS | 日本株 値幅制限モニター">
+<meta name="twitter:description" content="ストップ高・ストップ安、注目銘柄、IPO銘柄、決算発表銘柄をまとめた日本株モニター。">
+<meta name="twitter:image" content="https://kabu-pandamentals.github.io/assets/ogp.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -212,9 +227,6 @@
     display:flex;flex-wrap:wrap;align-items:center;gap:16px;
     margin-top:14px;padding-top:14px;border-top:1px solid var(--line);
   }
-  .chart-cell svg{display:block;}
-  .chart-note{font-family:var(--mono);font-size:9.5px;color:var(--muted);margin-top:2px;}
-
   .tv-link{
     display:flex;align-items:center;gap:8px;
     padding:9px 14px;border-radius:8px;
@@ -347,7 +359,6 @@
     .tv-link .tv-text{min-width:0;}
     .stats-grid{width:100%;}
     .stat .stat-value{white-space:normal;word-break:break-word;}
-    .chart-cell svg{max-width:100%;height:auto;}
   }
 </style>
 </head>
@@ -436,7 +447,7 @@
   <div class="stock-list" id="downList"></div>
 
   <div class="section-head up" style="margin-top:48px;">
-    <div class="bar"></div>
+    <div class="bar" style="background:var(--amber);"></div>
     <h2>注目の銘柄</h2>
     <span class="count" id="dateLabel1">2026.07.24</span>
   </div>
@@ -541,32 +552,6 @@
 </div>
 
 <script>
-// ---- sparkline renderer ----
-function sparkline(data, color, width=140, height=40){
-  const min = Math.min(...data, 0);
-  const max = Math.max(...data, 0);
-  const range = (max - min) || 1;
-  const stepX = width / (data.length - 1);
-  const zeroY = height - ((0 - min) / range) * height;
-  const pts = data.map((v,i)=>{
-    const x = i * stepX;
-    const y = height - ((v - min) / range) * height;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  }).join(' ');
-  const areaPts = `0,${zeroY.toFixed(1)} ${pts} ${width},${zeroY.toFixed(1)}`;
-  const last = data[data.length-1];
-  return `
-    <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-      <line x1="0" y1="${zeroY.toFixed(1)}" x2="${width}" y2="${zeroY.toFixed(1)}"
-        stroke="#d5d9df" stroke-width="1" stroke-dasharray="2,3"/>
-      <polygon points="${areaPts}" fill="${color}" opacity="0.12"/>
-      <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2"
-        stroke-linejoin="round" stroke-linecap="round"/>
-      <circle cx="${((data.length-1)*stepX).toFixed(1)}" cy="${(height - ((last-min)/range)*height).toFixed(1)}"
-        r="3" fill="${color}"/>
-    </svg>`;
-}
-
 function tvUrl(symbol){
   return `https://jp.tradingview.com/symbols/${symbol}/`;
 }
@@ -609,10 +594,6 @@ function renderStocks(list, containerId, type, dateKey){
         </div>
       </div>
       <div class="stock-mid">
-        <div class="chart-cell">
-          ${sparkline(s.chart, s.chartColor || color)}
-          <div class="chart-note">前日終値比・参考イメージ</div>
-        </div>
         <a class="tv-link" href="${tvUrl(s.tv)}" target="_blank" rel="noopener">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M2 12L6 7L9 10L14 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -668,10 +649,6 @@ function renderIPOStocks(list, containerId, dateKey){
         </div>
       </div>
       <div class="stock-mid">
-        <div class="chart-cell">
-          ${sparkline(s.chart, color)}
-          <div class="chart-note">前日終値比・参考イメージ</div>
-        </div>
         <a class="tv-link" href="${tvUrl(s.tv)}" target="_blank" rel="noopener">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M2 12L6 7L9 10L14 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
