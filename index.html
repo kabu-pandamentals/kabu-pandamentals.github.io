@@ -21,7 +21,7 @@
 <meta name="twitter:description" content="ストップ高・ストップ安、注目銘柄、IPO銘柄、決算発表銘柄をまとめた日本株モニター。">
 <meta name="twitter:image" content="https://kabu-pandamentals.github.io/assets/ogp.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&family=Press+Start+2P&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#ffffff;
@@ -93,9 +93,12 @@
   .mascot-wrap{position:relative;flex-shrink:0;}
   .mascot{display:block;width:38px;height:38px;filter:drop-shadow(0 1px 1px rgba(0,0,0,0.08));}
   .brand h1{
-    font-family:var(--mono);font-weight:800;font-size:22px;letter-spacing:2px;margin:0;
+    position:relative;
+    font-family:'Press Start 2P', monospace;font-weight:400;font-size:14px;letter-spacing:1px;margin:0;
+    color:#0a0a0a;line-height:1.7;
+    padding-right:6px;
   }
-  .brand h1 span{color:var(--muted);font-weight:500;font-size:12px;letter-spacing:3px;display:block;margin-top:2px;}
+  .brand h1 span{color:#3a3a3a;font-weight:500;font-family:var(--sans);font-size:12px;letter-spacing:2px;display:block;margin-top:3px;text-shadow:none;}
   .date-pick{
     font-family:var(--mono);font-size:13px;color:var(--muted);
     display:flex;align-items:center;gap:10px;
@@ -384,7 +387,7 @@
           <ellipse cx="32" cy="44" rx="4.8" ry="3.4" fill="var(--text)"/>
         </svg>
       </div>
-      <h1>PANDAMENTALS<span>日本株 値幅制限モニター</span></h1>
+      <h1>PANDAMENTALS<span>日本株 モメンタム</span></h1>
     </div>
     <div class="date-pick">
       対象日
@@ -400,7 +403,8 @@
         <option value="27">27日（月）</option>
         <option value="28">28日（火）</option>
         <option value="29">29日（水）</option>
-        <option value="30" selected>30日（木）</option>
+        <option value="30">30日（木）</option>
+        <option value="31" selected>31日（金）</option>
       </select>
     </div>
   </header>
