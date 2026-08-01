@@ -367,6 +367,25 @@
     .tv-link .tv-text{min-width:0;}
     .stats-grid{width:100%;}
     .stat .stat-value{white-space:normal;word-break:break-word;}
+    .site-footer .disclaimer .d-line{display:block;}
+
+    .kessan-table-wrap{overflow-x:hidden;}
+    table.kessan-table thead{display:none;}
+    table.kessan-table, table.kessan-table tbody{display:block;}
+    table.kessan-table tr{
+      display:flex;flex-wrap:wrap;align-items:baseline;column-gap:8px;
+      padding:10px 12px;border-bottom:1px solid var(--line);
+    }
+    table.kessan-table tr:last-child{border-bottom:none;}
+    table.kessan-table td{
+      display:inline;padding:0;border-bottom:none;white-space:normal;
+    }
+    table.kessan-table td:nth-child(1){font-weight:700;order:1;}
+    table.kessan-table td:nth-child(2){order:2;font-size:11px;}
+    table.kessan-table td:nth-child(3){order:3;font-size:11px;color:var(--muted);}
+    table.kessan-table td:last-child{
+      order:4;flex-basis:100%;min-width:0;margin-top:4px;
+    }
   }
 </style>
 </head>
@@ -556,7 +575,7 @@
   <footer class="site-footer">
     <div class="paw-row">🐾 🐾 🐾</div>
     <div class="tagline"><b>PANDAMENTALS</b></div>
-    <div class="disclaimer">掲載情報は株探などの公開情報をもとに整理した参考情報であり、投資勧誘を目的とするものではありません。投資判断はご自身の責任で行ってください。</div>
+    <div class="disclaimer"><span class="d-line">掲載情報は株探などの公開情報をもとに整理した参考情報であり、</span><span class="d-line">投資勧誘を目的とするものではありません。</span><span class="d-line">投資判断はご自身の責任で行ってください。</span></div>
   </footer>
 
 </div>
