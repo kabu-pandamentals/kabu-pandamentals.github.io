@@ -416,16 +416,18 @@
         <option value="2026" selected>2026年</option>
       </select>
       <select id="monthSelect">
-        <option value="7" selected>7月</option>
+        <option value="7">7月</option>
+        <option value="8" selected>8月</option>
       </select>
       <select id="daySelect">
-        <option value="23">23日（木）</option>
-        <option value="24">24日（金）</option>
-        <option value="27">27日（月）</option>
-        <option value="28">28日（火）</option>
-        <option value="29">29日（水）</option>
-        <option value="30">30日（木）</option>
-        <option value="31" selected>31日（金）</option>
+        <option value="23" data-month="7">23日（木）</option>
+        <option value="24" data-month="7">24日（金）</option>
+        <option value="27" data-month="7">27日（月）</option>
+        <option value="28" data-month="7">28日（火）</option>
+        <option value="29" data-month="7">29日（水）</option>
+        <option value="30" data-month="7">30日（木）</option>
+        <option value="31" data-month="7">31日（金）</option>
+        <option value="3" data-month="8" selected>3日（月）</option>
       </select>
     </div>
   </header>
@@ -782,6 +784,7 @@ function renderKessan(earnings, dateKey){
 var DATA = {};
 </script>
 <script src="data/2026/07.js"></script>
+<script src="data/2026/08.js"></script>
 <!-- 新しい月のデータを追加する場合は、ここに <script src="data/YYYY/MM.js"></script> を追記する -->
 <script src="data/upcoming-ipo.js"></script>
 <script>
@@ -831,10 +834,23 @@ function latestDateKey(){
   return keys[keys.length - 1];
 }
 
+// 選択中の月に属する日付だけをdaySelectの選択肢として表示する
+function filterDayOptionsForMonth(month){
+  const daySel = document.getElementById('daySelect');
+  const options = Array.from(daySel.options);
+  options.forEach(opt=>{ opt.hidden = (opt.dataset.month !== String(month)); });
+  const visible = options.filter(opt=>!opt.hidden);
+  const currentVisible = visible.some(opt=>opt.value === daySel.value);
+  if(visible.length && !currentVisible){
+    daySel.value = visible[visible.length - 1].value;
+  }
+}
+
 function syncSelectorsToKey(dateKey){
   const [y, m, d] = dateKey.split('-').map(Number);
   document.getElementById('yearSelect').value = String(y);
   document.getElementById('monthSelect').value = String(m);
+  filterDayOptionsForMonth(m);
   document.getElementById('daySelect').value = String(d);
 }
 
@@ -855,8 +871,12 @@ function syncSelectorsToKey(dateKey){
       renderDate(latest);
     }
   }
+  function handleMonthChange(){
+    filterDayOptionsForMonth(monthSel.value);
+    handleChange();
+  }
   yearSel.addEventListener('change', handleChange);
-  monthSel.addEventListener('change', handleChange);
+  monthSel.addEventListener('change', handleMonthChange);
   daySel.addEventListener('change', handleChange);
 })();
 
