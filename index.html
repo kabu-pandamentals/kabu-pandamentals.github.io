@@ -428,7 +428,8 @@
         <option value="30" data-month="7">30日（木）</option>
         <option value="31" data-month="7">31日（金）</option>
         <option value="3" data-month="8">3日（月）</option>
-        <option value="4" data-month="8" selected>4日（火）</option>
+        <option value="4" data-month="8">4日（火）</option>
+        <option value="5" data-month="8" selected>5日（水）</option>
       </select>
     </div>
   </header>
@@ -702,6 +703,7 @@ function renderIPOStocks(list, containerId, dateKey){
         <div class="stats-grid">
           <div class="stat"><span class="stat-label">対象日</span><span class="stat-value">${dateLabel}</span></div>
           <div class="stat"><span class="stat-label">時価総額</span><span class="stat-value">${s.marketCap}</span></div>
+          ${s.listDate ? `<div class="stat"><span class="stat-label">上場日</span><span class="stat-value">${s.listDate}</span></div>` : ''}
         </div>
       </div>
       <div class="detail">
@@ -835,15 +837,22 @@ function latestDateKey(){
   return keys[keys.length - 1];
 }
 
+// daySelectの全選択肢（月ごとの絞り込み前のマスターリスト）。
+// iOS Safari等、<option hidden>を無視するブラウザがあるため、
+// 絞り込みは選択肢の付け外しで行う（hidden属性には頼らない）。
+const ALL_DAY_OPTIONS = Array.from(document.querySelectorAll('#daySelect option')).map(opt=>({
+  value: opt.value, label: opt.textContent, month: opt.dataset.month
+}));
+
 // 選択中の月に属する日付だけをdaySelectの選択肢として表示する
 function filterDayOptionsForMonth(month){
   const daySel = document.getElementById('daySelect');
-  const options = Array.from(daySel.options);
-  options.forEach(opt=>{ opt.hidden = (opt.dataset.month !== String(month)); });
-  const visible = options.filter(opt=>!opt.hidden);
-  const currentVisible = visible.some(opt=>opt.value === daySel.value);
-  if(visible.length && !currentVisible){
-    daySel.value = visible[visible.length - 1].value;
+  const prevValue = daySel.value;
+  const matching = ALL_DAY_OPTIONS.filter(o=>o.month === String(month));
+  daySel.innerHTML = matching.map(o=>`<option value="${o.value}">${o.label}</option>`).join('');
+  const stillValid = matching.some(o=>o.value === prevValue);
+  if(matching.length){
+    daySel.value = stillValid ? prevValue : matching[matching.length - 1].value;
   }
 }
 
