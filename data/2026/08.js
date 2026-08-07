@@ -1292,7 +1292,7 @@ Object.assign(DATA, {
       {name:"Ａｒｅｎｔ", code:"5254", market:"東証Ｇ", group:"G", detail:"前期経常7.9%増益、今期は81.9%増益見通しで3期ぶり最高益更新へ"},
       {name:"ブロードバンドタワー", code:"3776", market:"東証Ｇ", group:"G", detail:"上期経常28.2%増益で着地"},
       {name:"ＮｅｘＴｏｎｅ", code:"7094", market:"東証Ｇ", group:"G", detail:"1Q経常76%増益で着地"},
-      {name:"中央経済社ホールディングス", code:"9476", market:"東証Ｇ", group:"G", detail:"出版・デジタル関連事業が堅調に推移"},
+      {name:"中央経済社ホールディングス", code:"9476", market:"東証Ｇ", group:"G", detail:"3Q累計経常1.7%減益も、進捗率155.5%で通期計画をすでに超過（4-6月期単体は57.1%減益に急落）"},
       {name:"フォーライフ", code:"3477", market:"東証Ｇ", group:"G", detail:"1Q経常37.5%増益で着地（ただし進捗率は5年平均を下回る）"},
       {name:"ＭＩＣ", code:"300A", market:"東証Ｇ", group:"G", detail:"1Q経常7.8%増益で着地"},
       {name:"ブティックス", code:"9272", market:"東証Ｇ", group:"G", detail:"1Q経常赤字が縮小（前年同期2.7億円の赤字→1.6億円の赤字）"},
