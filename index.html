@@ -960,17 +960,21 @@ renderDate(initialDateKey);
 // ==================================================================
 // 銘柄検索（ストップ高銘柄・ストップ安銘柄を横断検索）
 // ==================================================================
+// 全角/半角・大文字/小文字の違いを吸収して比較できるように正規化する
+function normalizeForSearch(str){
+  return String(str).normalize('NFKC').toLowerCase();
+}
+
 function searchStocks(query){
-  const q = query.trim();
+  const q = normalizeForSearch(query.trim());
   if(!q) return [];
-  const qLower = q.toLowerCase();
   const results = [];
   availableDateKeys().forEach(dateKey=>{
     const d = DATA[dateKey];
     if(!d) return;
     [['upStocks','up'], ['downStocks','down']].forEach(([key, type])=>{
       (d[key] || []).forEach(s=>{
-        if(s.name.includes(q) || s.code.toLowerCase().includes(qLower)){
+        if(normalizeForSearch(s.name).includes(q) || normalizeForSearch(s.code).includes(q)){
           results.push({s, type, dateKey});
         }
       });
