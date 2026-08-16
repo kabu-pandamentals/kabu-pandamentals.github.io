@@ -111,6 +111,40 @@
     opacity:1;color:var(--text);cursor:default;-webkit-appearance:none;appearance:none;
   }
 
+  /* ---------- Search bar ---------- */
+  .search-bar{margin-bottom:28px;}
+  .search-input-wrap{
+    position:relative;display:flex;align-items:center;gap:8px;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:0 14px;transition:border-color .15s;
+  }
+  .search-input-wrap:focus-within{border-color:var(--muted);}
+  .search-input-wrap svg{flex-shrink:0;color:var(--muted);}
+  .search-input-wrap input{
+    flex:1;min-width:0;border:0;background:transparent;outline:none;
+    font-family:var(--sans);font-size:14px;color:var(--text);padding:13px 0;
+  }
+  .search-input-wrap input::placeholder{color:var(--muted);}
+  .search-input-wrap input::-webkit-search-cancel-button{display:none;}
+  .search-clear{
+    flex-shrink:0;border:0;background:none;color:var(--muted);cursor:pointer;
+    font-size:18px;line-height:1;padding:4px 7px;border-radius:6px;display:none;
+  }
+  .search-clear:hover{color:var(--text);background:var(--panel-2);}
+  .search-input-wrap.has-value .search-clear{display:block;}
+  .search-hint{font-size:11.5px;color:var(--muted);margin-top:7px;padding:0 4px;}
+  .search-empty{
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;
+    padding:36px 20px;text-align:center;color:var(--muted);font-size:13.5px;
+  }
+  .search-result-date{
+    font-family:var(--mono);font-size:11px;color:var(--muted);
+    background:var(--panel-2);border-radius:5px;padding:2px 7px;
+    display:inline-block;margin-top:5px;
+  }
+  .stock.up .search-result-date{color:var(--up);}
+  .stock.down .search-result-date{color:var(--down);}
+
   /* ---------- Nikkei bar ---------- */
   .nikkei{
     display:flex;flex-wrap:wrap;gap:24px;align-items:baseline;
@@ -429,6 +463,20 @@
     </div>
   </header>
 
+  <div class="search-bar">
+    <div class="search-input-wrap" id="searchInputWrap">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <circle cx="7" cy="7" r="5.2" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <input type="search" id="stockSearchInput" placeholder="銘柄名またはコードで検索（例: パンダ製作所, 1234）" autocomplete="off">
+      <button type="button" class="search-clear" id="stockSearchClear" aria-label="検索をクリア">×</button>
+    </div>
+    <div class="search-hint">これまでに「ストップ高銘柄」「ストップ安銘柄」として掲載した銘柄を横断検索できます。</div>
+  </div>
+
+  <div id="dateView">
+
   <div class="nikkei">
     <div>
       <div class="label">日経平均株価</div>
@@ -571,6 +619,18 @@
   </div>
   <div class="stock-list" id="upcomingIpoList"></div>
 
+  </div><!-- /#dateView -->
+
+  <div id="searchView" style="display:none;">
+    <div class="section-head up">
+      <div class="bar"></div>
+      <h2>検索結果</h2>
+      <span class="count" id="searchResultCount">0件</span>
+    </div>
+    <div class="search-empty" id="searchEmptyMsg" style="display:none;">該当する銘柄が見つかりませんでした。銘柄名の一部やコードで試してみてください。</div>
+    <div class="stock-list" id="searchResultsList"></div>
+  </div>
+
   <footer class="site-footer">
     <div class="paw-row">🐾 🐾 🐾</div>
     <div class="tagline"><b>PANDAMENTALS</b></div>
@@ -597,62 +657,71 @@ function formatChangeWithAmount(priceStr, chgStr){
   return `${arrow}${amount.toLocaleString('en-US')}円（${m[1]}${m[2]}%）${m[3]}`;
 }
 
+// dateKeyの銘柄カード（stock要素）を1件分組み立てる。
+// 通常の日別表示・検索結果表示の両方から共通で使う。
+function buildStockCardEl(s, type, dateKey, opts={}){
+  const dateLabel = dateKey.replace(/-/g, '/');
+  const row = document.createElement('div');
+  row.className = `stock ${type}`;
+  const dateBadge = opts.showDateBadge
+    ? `<div class="search-result-date">${dateLabel}掲載・${type === 'up' ? 'ストップ高銘柄' : 'ストップ安銘柄'}</div>`
+    : '';
+  row.innerHTML = `
+    <div class="stock-top">
+      <div class="code">${s.code}</div>
+      <div class="name-wrap">
+        <a class="name" href="https://kabutan.jp/stock/?code=${s.code}" target="_blank" rel="noopener">${s.name}</a>
+        <div class="market">${s.market}</div>
+        ${dateBadge}
+        <div class="biz">${s.biz}</div>
+        <a class="site-link" href="${s.site}" target="_blank" rel="noopener">公式サイト ↗</a>
+      </div>
+      <div class="price-cell">
+        <div class="price-line">
+          <div class="price-date">${dateLabel}終値</div>
+          <div class="price">${s.price}円</div>
+        </div>
+        <div class="price-line">
+          <div class="chg-label">前日比</div>
+          <div class="chg"${s.chgColor ? ` style="color:${s.chgColor};"` : ''}>${formatChangeWithAmount(s.price, s.chg)}</div>
+        </div>
+      </div>
+    </div>
+    <div class="stock-mid">
+      <a class="tv-link" href="${tvUrl(s.tv)}" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M2 12L6 7L9 10L14 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="14" cy="3" r="1.4" fill="currentColor"/>
+        </svg>
+        <span class="tv-text">
+          <span class="tv-main">TradingView</span>
+          <span class="tv-sub">チャートを見る ↗</span>
+        </span>
+      </a>
+      <div class="stats-grid">
+        <div class="stat"><span class="stat-label">対象日</span><span class="stat-value">${dateLabel}</span></div>
+        <div class="stat"><span class="stat-label">時価総額</span><span class="stat-value">${s.marketCap}</span></div>
+      </div>
+    </div>
+    <div class="detail">
+      <div class="block"><b>値動きの背景</b>${s.detail}</div>
+      <div class="block"><b>翌日の視点</b><span class="outlook">${s.outlook}</span></div>
+      ${s.result ? `<div class="block"><b>翌日の結果</b><span class="outlook">${s.result}</span></div>` : ''}
+    </div>
+    <div class="expand-hint">タップして詳細を表示 ▾</div>
+  `;
+  row.addEventListener('click', (e)=>{
+    if(e.target.closest('a')) return;
+    row.classList.toggle('open');
+  });
+  return row;
+}
+
 function renderStocks(list, containerId, type, dateKey){
   const el = document.getElementById(containerId);
   el.innerHTML = '';
-  const color = type === 'up' ? '#e0342a' : '#2f6fe0';
-  const dateLabel = dateKey.replace(/-/g, '/');
   list.forEach((s)=>{
-    const row = document.createElement('div');
-    row.className = `stock ${type}`;
-    row.innerHTML = `
-      <div class="stock-top">
-        <div class="code">${s.code}</div>
-        <div class="name-wrap">
-          <a class="name" href="https://kabutan.jp/stock/?code=${s.code}" target="_blank" rel="noopener">${s.name}</a>
-          <div class="market">${s.market}</div>
-          <div class="biz">${s.biz}</div>
-          <a class="site-link" href="${s.site}" target="_blank" rel="noopener">公式サイト ↗</a>
-        </div>
-        <div class="price-cell">
-          <div class="price-line">
-            <div class="price-date">${dateLabel}終値</div>
-            <div class="price">${s.price}円</div>
-          </div>
-          <div class="price-line">
-            <div class="chg-label">前日比</div>
-            <div class="chg"${s.chgColor ? ` style="color:${s.chgColor};"` : ''}>${formatChangeWithAmount(s.price, s.chg)}</div>
-          </div>
-        </div>
-      </div>
-      <div class="stock-mid">
-        <a class="tv-link" href="${tvUrl(s.tv)}" target="_blank" rel="noopener">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M2 12L6 7L9 10L14 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="14" cy="3" r="1.4" fill="currentColor"/>
-          </svg>
-          <span class="tv-text">
-            <span class="tv-main">TradingView</span>
-            <span class="tv-sub">チャートを見る ↗</span>
-          </span>
-        </a>
-        <div class="stats-grid">
-          <div class="stat"><span class="stat-label">対象日</span><span class="stat-value">${dateLabel}</span></div>
-          <div class="stat"><span class="stat-label">時価総額</span><span class="stat-value">${s.marketCap}</span></div>
-        </div>
-      </div>
-      <div class="detail">
-        <div class="block"><b>値動きの背景</b>${s.detail}</div>
-        <div class="block"><b>翌日の視点</b><span class="outlook">${s.outlook}</span></div>
-        ${s.result ? `<div class="block"><b>翌日の結果</b><span class="outlook">${s.result}</span></div>` : ''}
-      </div>
-      <div class="expand-hint">タップして詳細を表示 ▾</div>
-    `;
-    row.addEventListener('click', (e)=>{
-      if(e.target.closest('a')) return;
-      row.classList.toggle('open');
-    });
-    el.appendChild(row);
+    el.appendChild(buildStockCardEl(s, type, dateKey));
   });
 }
 
@@ -889,6 +958,67 @@ function syncSelectorsToKey(dateKey){
 const initialDateKey = latestDateKey();
 syncSelectorsToKey(initialDateKey);
 renderDate(initialDateKey);
+
+// ==================================================================
+// 銘柄検索（ストップ高銘柄・ストップ安銘柄を横断検索）
+// ==================================================================
+function searchStocks(query){
+  const q = query.trim();
+  if(!q) return [];
+  const qLower = q.toLowerCase();
+  const results = [];
+  availableDateKeys().forEach(dateKey=>{
+    const d = DATA[dateKey];
+    if(!d) return;
+    [['upStocks','up'], ['downStocks','down']].forEach(([key, type])=>{
+      (d[key] || []).forEach(s=>{
+        if(s.name.includes(q) || s.code.toLowerCase().includes(qLower)){
+          results.push({s, type, dateKey});
+        }
+      });
+    });
+  });
+  results.sort((a, b)=> b.dateKey.localeCompare(a.dateKey));
+  return results;
+}
+
+function renderSearchResults(query){
+  const results = searchStocks(query);
+  const listEl = document.getElementById('searchResultsList');
+  const emptyEl = document.getElementById('searchEmptyMsg');
+  listEl.innerHTML = '';
+  document.getElementById('searchResultCount').textContent = `${results.length}件`;
+  emptyEl.style.display = results.length ? 'none' : '';
+  results.forEach(({s, type, dateKey})=>{
+    listEl.appendChild(buildStockCardEl(s, type, dateKey, {showDateBadge:true}));
+  });
+}
+
+function setSearchMode(active){
+  document.getElementById('dateView').style.display = active ? 'none' : '';
+  document.getElementById('searchView').style.display = active ? '' : 'none';
+}
+
+(function initSearch(){
+  const input = document.getElementById('stockSearchInput');
+  const clearBtn = document.getElementById('stockSearchClear');
+  const wrap = document.getElementById('searchInputWrap');
+
+  function handleInput(){
+    const q = input.value;
+    wrap.classList.toggle('has-value', q.length > 0);
+    const active = q.trim().length > 0;
+    setSearchMode(active);
+    if(active) renderSearchResults(q);
+  }
+
+  input.addEventListener('input', handleInput);
+  clearBtn.addEventListener('click', ()=>{
+    input.value = '';
+    handleInput();
+    input.focus();
+  });
+})();
 
 function renderUpcomingIPOs(list, containerId){
   const el = document.getElementById(containerId);
