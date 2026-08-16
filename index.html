@@ -132,7 +132,6 @@
   }
   .search-clear:hover{color:var(--text);background:var(--panel-2);}
   .search-input-wrap.has-value .search-clear{display:block;}
-  .search-hint{font-size:11.5px;color:var(--muted);margin-top:7px;padding:0 4px;}
   .search-empty{
     background:var(--panel);border:1px solid var(--line);border-radius:10px;
     padding:36px 20px;text-align:center;color:var(--muted);font-size:13.5px;
@@ -469,10 +468,9 @@
         <circle cx="7" cy="7" r="5.2" stroke="currentColor" stroke-width="1.6"/>
         <path d="M11 11L14.5 14.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
       </svg>
-      <input type="search" id="stockSearchInput" placeholder="銘柄名またはコードで検索（例: パンダ製作所, 1234）" autocomplete="off">
+      <input type="search" id="stockSearchInput" placeholder="銘柄名またはコードで検索" autocomplete="off">
       <button type="button" class="search-clear" id="stockSearchClear" aria-label="検索をクリア">×</button>
     </div>
-    <div class="search-hint">これまでに「ストップ高銘柄」「ストップ安銘柄」として掲載した銘柄を横断検索できます。</div>
   </div>
 
   <div id="dateView">
