@@ -4856,7 +4856,7 @@ Object.assign(DATA, {
       outlook:"具体的な新規材料が確認できないため持続性を見極めたい。法人向け「Schoo for Business」の契約社数拡大ペースが引き続き業績面での焦点。"
     },
     {
-      code:"3856", name:"Ａbalance", market:"東証スタンダード",
+      code:"3856", name:"Ａｂａｌａｎｃｅ", market:"東証スタンダード",
       site:"https://www.abalance.jp/", tv:"TSE-3856",
       price:"454.0", chg:"−1.30%", chgColor:"var(--down)", marketCap:"約86.4億円",
       biz:"エチオピア・米国等に生産拠点を持つ太陽光パネル製造・販売を主力とする再生可能エネルギー企業。",
